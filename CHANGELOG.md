@@ -6,7 +6,7 @@ Docs: https://docs.openclaw.ai
 
 ### Changes
 
-- Hooks: fire `gateway_start` and `gateway_stop` plugin hooks during gateway lifecycle, allowing plugins to react to startup and shutdown events. Thanks @a-anand-91119.
+- Hooks: fire `gateway:shutdown` internal hook during gateway shutdown with config, deps, workspace, and reason context, allowing internal hooks to perform cleanup or logging. Thanks @a-anand-91119.
 
 ### Fixes
 

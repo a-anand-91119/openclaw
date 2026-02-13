@@ -16,7 +16,6 @@ import {
 } from "../hooks/internal-hooks.js";
 import { loadInternalHooks } from "../hooks/loader.js";
 import { isTruthyEnvValue } from "../infra/env.js";
-import { getGlobalHookRunner } from "../plugins/hook-runner-global.js";
 import { type PluginServicesHandle, startPluginServices } from "../plugins/services.js";
 import { startBrowserControlServerIfEnabled } from "./server-browser.js";
 import {
@@ -151,11 +150,6 @@ export async function startGatewaySidecars(params: {
     });
   } catch (err) {
     params.log.warn(`plugin services failed to start: ${String(err)}`);
-  }
-
-  const hookRunner = getGlobalHookRunner();
-  if (hookRunner) {
-    void hookRunner.runGatewayStart({ port: params.port }, { port: params.port });
   }
 
   void startGatewayMemoryBackend({ cfg: params.cfg, log: params.log }).catch((err) => {
