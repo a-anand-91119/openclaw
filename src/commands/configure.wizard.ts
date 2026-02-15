@@ -383,6 +383,28 @@ export async function runConfigureWizard(
       logConfigUpdated(runtime);
     };
 
+    const configureWorkspace = async () => {
+      const workspaceInput = guardCancel(
+        await text({
+          message: "Workspace directory",
+          initialValue: workspaceDir,
+        }),
+        runtime,
+      );
+      workspaceDir = resolveUserPath(String(workspaceInput ?? "").trim() || DEFAULT_WORKSPACE);
+      nextConfig = {
+        ...nextConfig,
+        agents: {
+          ...nextConfig.agents,
+          defaults: {
+            ...nextConfig.agents?.defaults,
+            workspace: workspaceDir,
+          },
+        },
+      };
+      await ensureWorkspaceAndSessions(workspaceDir, runtime);
+    };
+
     if (opts.sections) {
       const selected = opts.sections;
       if (!selected || selected.length === 0) {
@@ -391,25 +413,7 @@ export async function runConfigureWizard(
       }
 
       if (selected.includes("workspace")) {
-        const workspaceInput = guardCancel(
-          await text({
-            message: "Workspace directory",
-            initialValue: workspaceDir,
-          }),
-          runtime,
-        );
-        workspaceDir = resolveUserPath(String(workspaceInput ?? "").trim() || DEFAULT_WORKSPACE);
-        nextConfig = {
-          ...nextConfig,
-          agents: {
-            ...nextConfig.agents,
-            defaults: {
-              ...nextConfig.agents?.defaults,
-              workspace: workspaceDir,
-            },
-          },
-        };
-        await ensureWorkspaceAndSessions(workspaceDir, runtime);
+        await configureWorkspace();
       }
 
       if (selected.includes("model")) {
@@ -480,25 +484,7 @@ export async function runConfigureWizard(
         ranSection = true;
 
         if (choice === "workspace") {
-          const workspaceInput = guardCancel(
-            await text({
-              message: "Workspace directory",
-              initialValue: workspaceDir,
-            }),
-            runtime,
-          );
-          workspaceDir = resolveUserPath(String(workspaceInput ?? "").trim() || DEFAULT_WORKSPACE);
-          nextConfig = {
-            ...nextConfig,
-            agents: {
-              ...nextConfig.agents,
-              defaults: {
-                ...nextConfig.agents?.defaults,
-                workspace: workspaceDir,
-              },
-            },
-          };
-          await ensureWorkspaceAndSessions(workspaceDir, runtime);
+          await configureWorkspace();
           await persistConfig();
         }
 
